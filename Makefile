@@ -5,10 +5,10 @@ RM = rm -rf
 
 SRCS = push_swap.c
 
-OBJS = $(SRCS:.C=.O)
+OBJS = $(SRCS:.c=.o)
 
-$(NAME) = $(OBJS)
-	ar rcs $(NAME) $(OBJS)
+$(NAME): $(OBJS)
+	cc -o $(NAME) $(OBJS)
 
 .c.o:
 	$(CC) $(FLAGS) -c $< -o $@

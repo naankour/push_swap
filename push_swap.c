@@ -6,7 +6,7 @@
 /*   By: naankour <naankour@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/20 09:29:24 by naankour          #+#    #+#             */
-/*   Updated: 2024/12/23 12:11:18 by naankour         ###   ########.fr       */
+/*   Updated: 2025/01/24 14:24:58 by naankour         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,118 @@
 #include <limits.h>
 #include <stdbool.h>
 #include <stdlib.h>
+
+size_t	ft_strlen(const char *str)
+{
+	size_t	i;
+
+	i = 0;
+	while (str[i] != '\0')
+	{
+		i++;
+	}
+	return (i);
+}
+
+char	*ft_strchr(const char *s, int c)
+{
+	int	i;
+
+	i = 0;
+	while (s[i] != '\0')
+	{
+		if (s[i] == (char)c)
+		{
+			return ((char *)&s[i]);
+		}
+		i++;
+	}
+	if (c == '\0')
+	{
+		return ((char *)&s[i]);
+	}
+	return (NULL);
+}
+
+char	*ft_substr(char const *s, unsigned int start, size_t len)
+{
+	char			*new;
+	unsigned int	i;
+
+	if (start >= ft_strlen(s))
+		len = 0;
+	else if (len > ft_strlen(s + start))
+		len = ft_strlen(s + start);
+	new = malloc(sizeof(char) * (len + 1));
+	if (!new)
+		return (NULL);
+	i = 0;
+	while (start + i < ft_strlen(s) && i < len)
+	{
+		new[i] = s[start + i];
+		i++;
+	}
+	new[i] = '\0';
+	return (new);
+}
+
+static size_t	ft_count_words(const char *s, char c)
+{
+	size_t	i;
+	size_t	word;
+
+	i = 0;
+	word = 0;
+	while (s[i] != '\0')
+	{
+		if ((s[i] != c) && ((s[i + 1] == c) || (s[i + 1] == '\0')))
+		{
+			word++;
+		}
+		i++;
+	}
+	return (word);
+}
+
+static	size_t	ft_word_len(const char *s, char c)
+{
+	size_t	count;
+
+	count = 0;
+	while (s[count] != c && s[count] != '\0')
+	{
+		count++;
+	}
+	return (count);
+}
+
+char	**ft_split(const char *s, char c)
+{
+	char		**arr;
+	size_t		i;
+	size_t		length;
+	size_t		index;
+
+	arr = (char **)malloc(sizeof(char *) * (ft_count_words(s, c) + 1));
+	if (!arr)
+		return (NULL);
+	i = 0;
+	index = 0;
+	while (s[i] != '\0')
+	{
+		while (s[i] != '\0' && s[i] == c)
+			i++;
+		if (s[i] != '\0')
+		{
+			length = ft_word_len(&s[i], c);
+			arr[index] = ft_substr(s, i, length);
+			index++;
+			i = i + length;
+		}
+	}
+	arr[index] = NULL;
+	return (arr);
+}
 
 int	ft_atoi(const char *str)
 {
@@ -37,30 +149,15 @@ int	ft_atoi(const char *str)
 	{
 		result = result * 10 + (str[i] - '0');
 		i++;
-		if(result > INT_MAX)
+		if (result > INT_MAX)
 			return (INT_MIN);
 	}
 	result *= sign;
-	if(result < INT_MIN || result > INT_MAX)
+	if (result < INT_MIN || result > INT_MAX)
 		return (INT_MIN);
 	return ((int)result);
 }
 
-//check if double
-
-int	ft_check_double(int *arr,int index, int num)
-{
-		int	i;
-
-		i = 0;
-		while(i < index)
-		{
-			if(arr[i] == num)
-				return(1);
-			i++;
-		}
-		return (0);
-}
 int	ft_isdigit(int c)
 {
 	if (c >= '0' && c <= '9')
@@ -69,74 +166,139 @@ int	ft_isdigit(int c)
 	}
 	return (0);
 }
+
 int	ft_is_valid_nb(char *str)
 {
 	int	i;
 
 	i = 0;
-	if(str[i] == '-' || str[i] == '+')
+	if (str[i] == '-' || str[i] == '+')
 		i++;
-	if(str[i] == '\0')
-		return(0);
-	while(str[i] != '\0')
+	if (str[i] == '\0')
+		return (0);
+	while (str[i] != '\0')
 	{
-		if(!ft_isdigit(str[i]))
-			return(0);
+		if (!ft_isdigit(str[i]))
+			return (0);
 		i++;
 	}
 	return(1);
 }
 
+typedef struct args
+{
+	int	value;
+	struct args *next;
+} t_list;
+
+int	ft_check_double(t_list *head, int num)
+{
+		t_list *current;
+		current = head;
+		while (current != NULL)
+		{
+			if (current->value == num)
+				return (1);
+			current = current->next;
+		}
+		return (0);
+}
+t_list	*ft_create_node(int value)
+{
+	t_list	*node;
+	node = malloc(sizeof(t_list));
+	if (!node)
+		return (NULL);
+	node->value = value;
+	node->next = NULL;
+	return (node);
+}
+
+void	ft_addnode_back(t_list **head, t_list *new)
+{
+	t_list *current;
+
+	if(!head || !new)
+		return;
+	if(*head == NULL)
+		*head = new;
+	else
+	{
+		current = *head;
+		while (current->next != NULL)
+			current = current->next;
+		current->next = new;
+	}
+}
+void	print_list(t_list *head)
+{
+	t_list	*current;
+	current = head;
+	while (current != NULL)
+	{
+		printf("%d\n", current->value);
+		current= current->next;
+	}
+}
+
+void	free_list(t_list *head)
+{
+	t_list	*temp;
+	while (head != NULL)
+	{
+		temp = head;
+		head = head->next;
+		free(temp);
+	}
+}
+int	ft_error(char **tab, t_list *head, int i, int num)
+{
+	if (!ft_is_valid_nb(tab[i]))
+	{
+		printf("Error\n");
+		return (1);
+	}
+	num = ft_atoi(tab[i]);
+	if (num == INT_MIN)
+	{
+		printf("Error\n");
+		return (1);
+	}
+	if (ft_check_double(head, num))
+	{
+		printf("Error\n");
+		return (1);
+	}
+	return (0);
+}
+
+
+
 int	main(int argc, char **argv)
 {
 	int	i;
 	int	num;
-	int	*arr;
-	int	index;
+	char	**tab;
+	t_list	*head;
 
-	if (argc < 2)
+	if (argc == 2 && ft_strchr(argv[1], ' ') != NULL)
+		tab = ft_split(argv[1], ' ');
+	else
+		tab = &argv[1];
+	i = 0;
+	head = NULL;
+	while (tab[i] != NULL)
 	{
-		printf("Error\n");
-		return(1);
-	}
-	if (argc > 1)
-	{
-		arr = malloc(sizeof(int) * (argc -1));
-		if(!arr)
+		if (ft_error(tab, head, i, num))
+		{
+			free_list(head);
 			return (1);
-		i = 1;
-		index = 0;
-		while(i < argc)
-		{
-			if(!ft_is_valid_nb(argv[i]))
-			{
-				printf("Error\n");
-				free(arr);
-				return(1);
-			}
-			num = ft_atoi(argv[i]);
-			if(num == INT_MIN)
-			{
-				printf("Error\n");
-				free (arr);
-				return (1);
-			}
-			if(ft_check_double(arr, index, num))
-			{
-				printf("Error\n");
-				free(arr);
-				return (1);
-			}
-			arr[index++] = num;
-			i++;
 		}
-		int j = 0;
-		while(j < index)
-		{
-			printf("Argument %d : %d\n", j + 1, arr[j]);
-			j++;
-		}
-		free (arr);
-		return (0);
+		num = ft_atoi(tab[i]);
+		ft_addnode_back(&head, ft_create_node(num));
+		i++;
 	}
+	print_list(head);
+	free_list(head);
+	return (0);
 }
