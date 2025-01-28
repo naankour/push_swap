@@ -14,11 +14,28 @@
 
 void	algo_3(t_list **stack_a)
 {
-	if(*stack_a == NULL || (*stack_a)->next == NULL || (*stack_a)->next->next == NULL)
+	int	A = (*stack_a)->value;
+	int	B = (*stack_a)->next->value;
+	int	C = (*stack_a)->next->next->value;
+
+	if (*stack_a == NULL || (*stack_a)->next == NULL || (*stack_a)->next->next == NULL)
 		return ;
-	if((*stack_a)->value < (*stack_a)->next->value && (*stack_a)->next->value < (*stack_a)->next->next->value)
+	if (A < B && B < C)
 		return ;
-	if((*stack_a)->value > (*stack_a)->next->value && (*stack_a)->next->next->value)
-		swap_sa(stack_a, 1);
+	if (A < C && B < A)
+		swap_a(stack_a, 1);
+	else if (A < B && C < A)
+		reverse_rotate_ra(stack_a, 1);
+	else if (B < C && C < A)
 		rotate_ra(stack_a, 1);
+	else if (A < C && C < B)
+	{
+		swap_a(stack_a, 1);
+		rotate_ra(stack_a, 1);
+	}
+	else if (B < A && C < B)
+	{
+		rotate_ra(stack_a, 1);
+		swap_a(stack_a, 1);
+	}
 }

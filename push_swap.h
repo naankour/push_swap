@@ -37,4 +37,7 @@ void	reverse_rotate_rr(t_list **stack_a, t_list **stack_b);
 void	push_a(t_list **stack_a, t_list **stack_b, int print);
 void	push_b(t_list **stack_a, t_list **stack_b, int print);
 
+void	algo_3(t_list **stack_a);
+void	algo_5(t_list **stack_a);
+
 #endif

@@ -6,15 +6,26 @@
 /*   By: naankour <naankour@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/20 09:29:24 by naankour          #+#    #+#             */
-/*   Updated: 2025/01/24 14:24:58 by naankour         ###   ########.fr       */
+/*   Updated: 2025/01/28 13:48:23 by naankour         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <unistd.h>
-#include <stdio.h>
-#include <limits.h>
-#include <stdbool.h>
-#include <stdlib.h>
+#include "push_swap.h"
+void	algo_5(t_list **stack_a)
+{
+	t_list	*current;
+	current = *stack_a;
+
+	while(current != NULL && current->next != NULL)
+	{
+		if(current->value > current->next->value)
+		{
+				swap_a(stack_a, 1);
+		}
+		else
+			current = current->next;
+	}
+}
 
 size_t	ft_strlen(const char *str)
 {
@@ -185,12 +196,6 @@ int	ft_is_valid_nb(char *str)
 	return(1);
 }
 
-typedef struct args
-{
-	int	value;
-	struct args *next;
-} t_list;
-
 int	ft_check_double(t_list *head, int num)
 {
 		t_list *current;
@@ -272,14 +277,13 @@ int	ft_error(char **tab, t_list *head, int i, int num)
 	return (0);
 }
 
-
-
 int	main(int argc, char **argv)
 {
 	int	i;
 	int	num;
 	char	**tab;
 	t_list	*head;
+	t_list	*stack_a = NULL;
 
 	if (argc == 2 && ft_strchr(argv[1], ' ') != NULL)
 		tab = ft_split(argv[1], ' ');
@@ -298,7 +302,10 @@ int	main(int argc, char **argv)
 		ft_addnode_back(&head, ft_create_node(num));
 		i++;
 	}
-	print_list(head);
-	free_list(head);
+	stack_a = head;
+	if(stack_a)
+		algo_5(&stack_a);
+	print_list(stack_a);
+	free_list(stack_a);
 	return (0);
 }

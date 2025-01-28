@@ -1,100 +1,156 @@
+#include "push_swap.h"
 #include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h>
 
-// Définition de la structure t_list
-typedef struct s_list
+void	algo_3(t_list **stack_a)
 {
-	int data;
-	struct s_list *next;
-} t_list;
+	int	A = (*stack_a)->value;
+	int	B = (*stack_a)->next->value;
+	int	C = (*stack_a)->next->next->value;
 
-// Fonction pour ajouter un élément en tête de liste
-t_list *add_to_list(t_list *head, int value)
-{
-	t_list *new_node = malloc(sizeof(t_list));
-	if (!new_node)
-		return NULL;
-
-	new_node->data = value;
-	new_node->next = head;
-	return new_node;
-}
-
-// Fonction pour afficher une liste
-void print_list(t_list *head)
-{
-	while (head)
+	if(*stack_a == NULL || (*stack_a)->next == NULL || (*stack_a)->next->next == NULL)
+		return ;
+	if(A < B && B < C)
+		return ;
+	if(A < C && B < A)
+		swap_a(stack_a, 1);
+	else if(A < B && C < A)
+		reverse_rotate_ra(stack_a, 1);
+	else if (B < C && C < A)
+		rotate_ra(stack_a, 1);
+	else if(A < C && C < B)
 	{
-		printf("%d ", head->data);
-		head = head->next;
+		swap_a(stack_a, 1);
+		rotate_ra(stack_a, 1);
 	}
-	printf("\n");
-}
-
-// Fonction pour libérer la mémoire
-void free_list(t_list *head)
-{
-	t_list *temp;
-	while (head)
+	else if (B < A && C < B)
 	{
-		temp = head;
-		head = head->next;
-		free(temp);
+		rotate_ra(stack_a, 1);
+		swap_a(stack_a, 1);
 	}
 }
-
-// Fonction reverse_rotate_rb
-void reverse_rotate_rb(t_list **stack_b, int print)
+void	rotate_ra(t_list **stack_a, int print)
 {
-	t_list  *cur;
-	t_list  *prev;
+	t_list	*temp;
+	t_list	*last;
 
-	if (*stack_b == NULL || (*stack_b)->next == NULL)
-		return;
+	if (*stack_a == NULL || (*stack_a)->next == NULL)
+		return ;
+	temp = *stack_a;
+	*stack_a = (*stack_a)->next;
+	last = *stack_a;
+	while (last->next != NULL)
+		last = last->next;
+	last->next = temp;
+	temp->next = NULL;
+	if (print)
+		write(1, "ra\n", 3);
+}
+void	reverse_rotate_ra(t_list **stack_a, int print)
+{
+	t_list	*cur;
+	t_list	*prev;
 
-	cur = *stack_b;
+	if (*stack_a == NULL || (*stack_a)->next == NULL)
+		return ;
+	cur = *stack_a;
 	prev = NULL;
-
 	while (cur->next != NULL)
 	{
 		prev = cur;
 		cur = cur->next;
 	}
-
-	cur->next = *stack_b;  // Le dernier élément pointe vers le sommet
-	prev->next = NULL;     // Déconnecter l'avant-dernier élément
-	*stack_b = cur;        // Le dernier élément devient le nouveau sommet
-
+	cur->next = *stack_a;
+	prev->next = NULL;
+	*stack_a = cur;
 	if (print)
-		write(1, "rrb\n", 4);
+		write(1, "rra\n", 4);
+}
+void	swap_a(t_list **stack_a, int print)
+{
+	t_list	*temp;
+
+	if (*stack_a != NULL && (*stack_a)->next != NULL)
+	{
+		temp = (*stack_a)->next;
+		(*stack_a)->next = temp->next;
+		temp->next = *stack_a;
+		*stack_a = temp;
+		if (print)
+			write(1, "sa\n", 3);
+	}
 }
 
-// Fonction principale
-int main(void)
+// Fonction utilitaire pour créer un nouveau nœud de la pile
+t_list	*create_node(int value)
 {
-	t_list *stack_b = NULL;
+	t_list	*new_node;
 
-	// Ajouter des éléments à la pile (5 -> 4 -> 3 -> 2 -> 1)
-	stack_b = add_to_list(stack_b, 1);
-	stack_b = add_to_list(stack_b, 2);
-	stack_b = add_to_list(stack_b, 3);
-	stack_b = add_to_list(stack_b, 4);
-	stack_b = add_to_list(stack_b, 5);
+	new_node = (t_list *)malloc(sizeof(t_list));
+	if (!new_node)
+		return (NULL);
+	new_node->value = value;
+	new_node->next = NULL;
+	return (new_node);
+}
 
-	// Afficher la pile avant l'opération
-	printf("Pile avant rrb : ");
-	print_list(stack_b);
+// Fonction utilitaire pour ajouter un élément à la fin de la pile
+void	add_to_stack(t_list **stack, int value)
+{
+	t_list	*new_node;
+	t_list	*current;
 
-	// Appliquer la rotation inversée
-	reverse_rotate_rb(&stack_b, 1);
+	new_node = create_node(value);
+	if (!*stack)
+	{
+		*stack = new_node;
+		return ;
+	}
+	current = *stack;
+	while (current->next)
+		current = current->next;
+	current->next = new_node;
+}
 
-	// Afficher la pile après l'opération
-	printf("Pile après rrb : ");
-	print_list(stack_b);
+// Fonction utilitaire pour imprimer la pile
+void	print_stack(t_list *stack)
+{
+	while (stack)
+	{
+		printf("%d ", stack->value);
+		stack = stack->next;
+	}
+	printf("\n");
+}
 
-	// Libérer la mémoire
-	free_list(stack_b);
+// Main pour tester algo_3
+int	main(void)
+{
+	t_list	*stack_a = NULL;
 
-	return 0;
+	// Ajouter des éléments à la pile (ordre initial : 3, 1, 2)
+	add_to_stack(&stack_a, 3);
+	add_to_stack(&stack_a, 2);
+	add_to_stack(&stack_a, 1);
+
+	// Afficher la pile avant tri
+	printf("Pile avant tri : ");
+	print_stack(stack_a);
+
+	// Appliquer l'algorithme pour trier 3 éléments
+	algo_3(&stack_a);
+
+	// Afficher la pile après tri
+	printf("Pile après tri : ");
+	print_stack(stack_a);
+
+	// Libérer la mémoire (facultatif ici mais recommandé)
+	t_list	*temp;
+	while (stack_a)
+	{
+		temp = stack_a;
+		stack_a = stack_a->next;
+		free(temp);
+	}
+	return (0);
 }
