@@ -10,9 +10,9 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "push_swap.h"
+#include "../push_swap.h"
 
-void	reverse_rotate_ra(t_list **stack_a, int print)
+void	rra(t_list **stack_a, int print)
 {
 	t_list	*cur;
 	t_list	*prev;
@@ -33,7 +33,7 @@ void	reverse_rotate_ra(t_list **stack_a, int print)
 		write(1, "rra\n", 4);
 }
 
-void	reverse_rotate_rb(t_list **stack_b, int print)
+void	rrb(t_list **stack_b, int print)
 {
 	t_list	*cur;
 	t_list	*prev;
@@ -54,9 +54,10 @@ void	reverse_rotate_rb(t_list **stack_b, int print)
 		write(1, "rrb\n", 4);
 }
 
-void	reverse_rotate_rr(t_list **stack_a, t_list **stack_b)
+void	rrr(t_list **stack_a, t_list **stack_b, int print)
 {
-	reverse_rotate_ra(stack_a, 0);
-	reverse_rotate_rb(stack_b, 0);
-	write(1, "rrr\n", 3);
+	rra(stack_a, 0);
+	rrb(stack_b, 0);
+	if (print)
+		write(1, "rrr\n", 3);
 }

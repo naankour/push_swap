@@ -10,9 +10,9 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "push_swap.h"
+#include "../push_swap.h"
 
-void	push_a(t_list **stack_a, t_list **stack_b, int print)
+void	pa(t_list **stack_a, t_list **stack_b, int print)
 {
 	t_list	*temp;
 
@@ -26,7 +26,7 @@ void	push_a(t_list **stack_a, t_list **stack_b, int print)
 		write(1, "pa\n", 3);
 }
 
-void	push_b(t_list **stack_a, t_list **stack_b, int print)
+void	pb(t_list **stack_a, t_list **stack_b, int print)
 {
 	t_list	*temp;
 

@@ -1,29 +1,21 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   algo_5.c                                           :+:      :+:    :+:   */
+/*   algo2.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: naankour <naankour@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/01/28 13:18:34 by naankour          #+#    #+#             */
-/*   Updated: 2025/01/28 13:18:34 by naankour         ###   ########.fr       */
+/*   Created: 2025/01/26 16:14:01 by naankour          #+#    #+#             */
+/*   Updated: 2025/01/26 16:14:01 by naankour         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "push_swap.h"
+#include "../push_swap.h"
 
-void	algo_5(t_list **stack_a)
+void	algo_2(t_list **stack_a)
 {
-	t_list	*current;
-	current = *stack_a;
-
-	while(current != NULL && current->next != NULL)
-	{
-		if(current->value > current->next->value)
-		{
-				swap_a(stack_a, 1);
-		}
-		else
-			current = current->next;
-	}
+	if (*stack_a == NULL || (*stack_a)->next == NULL)
+		return ;
+	if((*stack_a)->value > (*stack_a)->next->value)
+		sa(stack_a, 1);
 }
