@@ -55,9 +55,7 @@ int	ft_atoi(const char *str);
 int ft_lstsize(t_list *lst);
 void    greedy_push_back_to_a(t_list **a, t_list **b);
 void	push_chunks_to_b(t_list **a, t_list **b, int size);
-void algo_n(t_list **a, t_list **b);
-
-
+void	algo_n(t_list **stack_a,t_list **stack_b);
 
 char	**ft_split(const char *s, char c);
 #endif

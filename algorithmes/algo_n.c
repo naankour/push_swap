@@ -1,150 +1,202 @@
 #include "../push_swap.h"
-#include <stdlib.h>
-#include <limits.h>
 
-// Fonction de comparaison pour qsort
-int compare(const void *a, const void *b) {
-    return (*(int *)a - *(int *)b);
+
+
+//mettre liste dans arr
+static int	*stack_to_arr(t_list *stack_a, int size)
+{
+	int	i;
+	int	*arr;
+	t_list	*temp;
+
+	arr = malloc(sizeof(int) * size);
+	if (!arr)
+		return (NULL);
+	i = 0;
+	temp = stack_a;
+	while(i < size)
+	{
+		arr[i] = temp->value;
+		temp = temp->next;
+		i++;
+	}
+	return (arr);
 }
 
-// Crée un tableau trié à partir de la pile
-int *sorted_array(t_list *stack, int size) {
-    int *arr = malloc(size * sizeof(int));
-    t_list *tmp = stack;
-    for (int i = 0; i < size; i++) {
-        arr[i] = tmp->value;
-        tmp = tmp->next;
-    }
-    qsort(arr, size, sizeof(int), compare);
-    return arr;
+// trier arr pour trouver mediane
+static void	bubble_sort(int *arr, int size)
+{
+	int	i;
+	int	j;
+	int	temp;
+
+	i = 0;
+	while(i < (size - 1))
+	{
+		j = 0;
+		while(j < (size - 1 - i))
+		{
+			if (arr[j] > arr [j + 1])
+			{
+				temp = arr[j];
+				arr[j] = arr[j + 1];
+				arr [j + 1] = temp;
+			}
+			j++;
+		}
+		i++;
+	}
 }
 
-// Calcule le nombre de rotations pour stack_a
-int calculate_rotations_a(t_list *a, int value) {
-    if (!a) return 0;
-    int rotations = 0;
-    t_list *current = a;
-    int max = INT_MIN;
-    int min = INT_MAX;
-    t_list *tmp = a;
-    
-    while (tmp) {
-        if (tmp->value > max) max = tmp->value;
-        if (tmp->value < min) min = tmp->value;
-        tmp = tmp->next;
-    }
-    
-    if (value < min || value > max) {
-        while (current->value != min) {
-            rotations++;
-            current = current->next;
-        }
-    } else {
-        while (!(current->value < value && current->next->value > value)) {
-            rotations++;
-            current = current->next;
-        }
-        rotations++;
-    }
-    
-    if (rotations > ft_lstsize(a) / 2)
-        rotations -= ft_lstsize(a);
-    return rotations;
+// trouver la mediane
+static int	find_median(int	*arr, int size)
+{
+	if (size % 2 != 0)
+	{
+		return (arr[size / 2]);
+	}
+	else
+		return ((arr[(size / 2) - 1] + arr[size / 2]) / 2);
 }
 
-// Calcule le nombre de rotations pour stack_b
-int calculate_rotations_b(t_list *b, int value) {
-    int rotations = 0;
-    t_list *current = b;
-    while (current && current->value != value) {
-        rotations++;
-        current = current->next;
-    }
-    if (rotations > ft_lstsize(b) / 2)
-        rotations -= ft_lstsize(b);
-    return rotations;
+// pousser la moitie avec les plus petits int dans stack_b
+
+static void	push_small_to_b(t_list ** stack_a, t_list **stack_b)
+{
+	int i;
+	int	size;
+	int median;
+	int count;
+
+	size = ft_lstsize(*stack_a);
+	median = find_median(*stack_a, size);
+	i = 0;
+	count = 0;
+	while(i < size)
+	{
+		if((*stack_a)->value < median)
+		{
+		pb(stack_a, stack_b, 1);
+		count++;
+		}
+		else
+			ra(stack_a, 1);
+		i++;
+	}
 }
 
-// Exécute les rotations optimisées
-void perform_rotations(t_list **a, t_list **b, int rot_a, int rot_b) {
-    while (rot_a > 0 && rot_b > 0) {
-        rr(a, b, 1);
-        rot_a--;
-        rot_b--;
-    }
-    while (rot_a < 0 && rot_b < 0) {
-        rrr(a, b, 1);
-        rot_a++;
-        rot_b++;
-    }
-    while (rot_a > 0) {
-        ra(a, 1);
-        rot_a--;
-    }
-    while (rot_a < 0) {
-        rra(a, 1);
-        rot_a++;
-    }
-    while (rot_b > 0) {
-        rb(b, 1);
-        rot_b--;
-    }
-    while (rot_b < 0) {
-        rrb(b, 1);
-        rot_b++;
-    }
+void	algo_n(t_list **stack_a,t_list **stack_b)
+{
+	int	*arr;
+	int	size;
+	int	median;
+
+	size = ft_lstsize(*stack_a);
+	arr = stack_to_arr(*stack_a, size);
+	if(!arr)
+		return (NULL);
+	bubble_sort(arr, size);
+	median = find_median(arr, size);
+	free(arr);
+	push_small_to_b(stack_a, stack_b);
 }
 
-// Phase 1: Pousse les éléments de stack_a vers stack_b par blocs
-void push_chunks_to_b(t_list **a, t_list **b, int size) {
-    int *sorted = sorted_array(*a, size);
-    int chunk_size = (size <= 100) ? 15 : 30;
-    int chunks = size / chunk_size + (size % chunk_size != 0);
 
-    for (int i = 0; i < chunks; i++) {
-        int pivot = sorted[i * chunk_size];
-        int elements_pushed = 0;
-        while (elements_pushed < chunk_size && *a) {
-            if ((*a)->value <= pivot) {
-                pb(a, b, 1);
-                elements_pushed++;
-            } else {
-                ra(a, 1);
-            }
-        }
-    }
-    free(sorted);
-}
 
-// Phase 2: Ramène les éléments de stack_b vers stack_a de manière optimisée
-void greedy_push_back_to_a(t_list **a, t_list **b) {
-    while (*b) {
-        t_list *current = *b;
-        int min_cost = INT_MAX;
-        int best_rot_a = 0;
-        int best_rot_b = 0;
 
-        while (current) {
-            int rot_b = calculate_rotations_b(*b, current->value);
-            int rot_a = calculate_rotations_a(*a, current->value);
-            int total_cost = abs(rot_a) + abs(rot_b);
 
-            if (total_cost < min_cost) {
-                min_cost = total_cost;
-                best_rot_a = rot_a;
-                best_rot_b = rot_b;
-            }
-            current = current->next;
-        }
-        perform_rotations(a, b, best_rot_a, best_rot_b);
-        pa(a, b, 1);
-    }
-}
 
-// Algorithme principal pour les listes de taille > 5
-void algo_n(t_list **a, t_list **b) {
-    int size = ft_lstsize(*a);
-    push_chunks_to_b(a, b, size);
-    greedy_push_back_to_a(a, b);
-}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// int main()
+// {
+// 	int arr[] = {18, 19, 20, 21, 22, 23};
+// 	int size = sizeof(arr) / sizeof(arr[0]);
+
+// 	printf("Médiane : %d\n", find_median(arr, size));
+// 	return 0;
+// }
+
+// t_list	*ft_create_node(int value)
+// {
+// 	t_list	*node;
+// 	node = malloc(sizeof(t_list));
+// 	if (!node)
+// 		return (NULL);
+// 	node->value = value;
+// 	node->next = NULL;
+// 	return (node);
+// }
+
+// void	free_list(t_list *head)
+// {
+// 	t_list	*temp;
+// 	while (head != NULL)
+// 	{
+// 		temp = head;
+// 		head = head->next;
+// 		free(temp);
+// 	}
+// }
+// int main()
+// {
+// 	t_list  *stack_a = ft_create_node(5);
+// 	stack_a->next = ft_create_node(4);
+// 	stack_a->next->next = ft_create_node(3);
+// 	stack_a->next->next->next = ft_create_node(2);
+
+// 	int size = 4;
+
+// 	int *arr = stack_to_arr(stack_a, size);
+// 	if (!arr)
+// 	{
+// 		printf("Error: Memory allocation failed\n");
+// 		free_list(stack_a);
+// 		return (1);
+// 	}
+
+// 	printf("Array contents:\n");
+
+// 	int i = 0;
+// 	while(i < size)
+// 	{
+// 		printf("%d ", arr[i]);
+// 		i++;
+// 	}
+// 	printf("\n");
+// 	bubble_sort(arr, size);
+// 	int median = find_median(arr, size);
+// 	printf("Après le tri : ");
+//     for(int i = 0; i < size; i++)
+// 		printf("%d", arr[i]);
+// 		printf("\n");
+// 	printf("%d\n", median );
+
+// 	free(arr);
+// 	free_list(stack_a);
+// 	return (0);
+// }
 
