@@ -6,7 +6,7 @@
 /*   By: naankour <naankour@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/20 09:29:24 by naankour          #+#    #+#             */
-/*   Updated: 2025/02/01 16:34:33 by naankour         ###   ########.fr       */
+/*   Updated: 2025/02/02 11:24:45 by naankour         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,8 +58,10 @@ int	main(int argc, char **argv)
 		algo_5(&stack_a, &stack_b);
 	else
         algo_n(&stack_a, &stack_b);
+	print_list(stack_a);
+	printf("\n");
 	print_list(stack_b);
 	free_list(stack_a);
-	free_list(stack_a);
+	free_list(stack_b);
 	return (0);
 }

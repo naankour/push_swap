@@ -1,7 +1,5 @@
 #include "../push_swap.h"
 
-
-
 //mettre liste dans arr
 static int	*stack_to_arr(t_list *stack_a, int size)
 {
@@ -60,71 +58,164 @@ static int	find_median(int	*arr, int size)
 }
 
 // pousser la moitie avec les plus petits int dans stack_b
-
 static void	push_small_to_b(t_list ** stack_a, t_list **stack_b)
 {
 	int i;
 	int	size;
 	int median;
 	int count;
+	int	*arr;
 
 	size = ft_lstsize(*stack_a);
-	median = find_median(*stack_a, size);
+	arr = stack_to_arr(*stack_a, size);
+	if (!arr)
+		return;
+	bubble_sort(arr, size);
+	median = find_median(arr, size);
+	free(arr);
 	i = 0;
 	count = 0;
 	while(i < size)
 	{
 		if((*stack_a)->value < median)
 		{
-		pb(stack_a, stack_b, 1);
-		count++;
+			pb(stack_a, stack_b, 1);
+			count++;
 		}
 		else
 			ra(stack_a, 1);
 		i++;
 	}
 }
-
-void	algo_n(t_list **stack_a,t_list **stack_b)
+//algo_3 pour trier dans l ordre decroissant
+void	algo_3_b(t_list **stack_b)
 {
-	int	*arr;
-	int	size;
-	int	median;
+	int	A = (*stack_b)->value;
+	int	B = (*stack_b)->next->value;
+	int	C = (*stack_b)->next->next->value;
 
-	size = ft_lstsize(*stack_a);
-	arr = stack_to_arr(*stack_a, size);
-	if(!arr)
-		return (NULL);
-	bubble_sort(arr, size);
-	median = find_median(arr, size);
-	free(arr);
-	push_small_to_b(stack_a, stack_b);
+	if (*stack_b == NULL || (*stack_b)->next == NULL || (*stack_b)->next->next == NULL)
+		return ;
+	if (A < B && B < C)
+		return ;
+	if (A < C && C < B)
+		sb(stack_b, 1);
+	else if (B < A && A < C)
+		rb(stack_b, 1);
+	else if (C < A && A < B)
+		rrb(stack_b, 1);
+	else if (B < C && C < A)
+	{
+		sb(stack_b, 1);
+		rb(stack_b, 1);
+	}
+	else if (C < B && B < A)
+	{
+		rb(stack_b, 1);
+		sb(stack_b, 1);
+	}
+}
+// algo_2 pour trier dans l ordre decroissant
+void	algo_2_b(t_list **stack_b)
+{
+	if (*stack_b == NULL || (*stack_b)->next == NULL)
+		return ;
+	if((*stack_b)->value < (*stack_b)->next->value)
+		sb(stack_b, 1);
+}
+// algo_5 pour trier dans l ordre decroissant
+
+static int search_max(t_list *stack)
+{
+	if (stack == NULL)
+		return -1;
+	int i = 0;
+	int max = stack->value;
+	int position = 0;
+	t_list *temp = stack;
+
+	while (temp != NULL)
+	{
+		if (temp->value > max)
+		{
+			max = temp->value;
+			position = i;
+		}
+		temp = temp->next;
+		i++;
+	}
+	return position;
 }
 
+static void push_max_to_a(t_list **stack_a, t_list **stack_b)
+{
+	int max_position = search_max(*stack_b);
+	int size = ft_lstsize(*stack_b);
 
+	if (max_position <= (size / 2))
+		while (max_position > 0)
+		{
+			rb(stack_b, 1);
+			max_position--;
+		}
+	else
+	{
+		int moves = size - max_position;
+		while (moves > 0)
+		{
+			rrb(stack_b, 1);
+			moves--;
+		}
+	}
 
+	pa(stack_a, stack_b, 1);
+}
 
+void algo_5_b(t_list **stack_a, t_list **stack_b)
+{
+	push_max_to_a(stack_a, stack_b);
+	push_max_to_a(stack_a, stack_b);
 
+	if (ft_lstsize(*stack_b) == 3)
+		algo_3_b(stack_b);
+	else if (ft_lstsize(*stack_b) == 2)
+		algo_2_b(stack_b);
 
+	pb(stack_a, stack_b, 1);
+	pb(stack_a, stack_b, 1);
+}
 
+void	sort_stack_b(t_list **stack_a, t_list **stack_b)
+{
+	int size;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+	size = ft_lstsize(*stack_b);
+	if(size == 2)
+		algo_2_b(stack_b);
+	if (size == 3)
+		algo_3_b(stack_b);
+	else if (size == 5)
+		algo_5_b(stack_a, stack_b);
+	// else
+	// {
+	// 	while (*stack_b)
+	// 	{
+	// 		move_largest_to_top(stack_b);
+	// 		pa(stack_a, stack_b, 1);
+	// 	}
+	// }
+}
+void	algo_n(t_list **stack_a,t_list **stack_b)
+{
+	if(!stack_a || !(*stack_a))
+		return;
+	while(ft_lstsize(*stack_a) > 5)
+	{
+		push_small_to_b(stack_a, stack_b);
+	}
+	algo_5(stack_a, stack_b);
+	sort_stack_b(stack_a, stack_b);
+}
 
 
 
