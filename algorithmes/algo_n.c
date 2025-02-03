@@ -1,10 +1,22 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   algo_n.c                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: naankour <naankour@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/02/03 15:04:01 by naankour          #+#    #+#             */
+/*   Updated: 2025/02/03 15:12:56 by naankour         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../push_swap.h"
 
 //mettre liste dans arr
 static int	*stack_to_arr(t_list *stack_a, int size)
 {
-	int	i;
-	int	*arr;
+	int		i;
+	int		*arr;
 	t_list	*temp;
 
 	arr = malloc(sizeof(int) * size);
@@ -12,7 +24,7 @@ static int	*stack_to_arr(t_list *stack_a, int size)
 		return (NULL);
 	i = 0;
 	temp = stack_a;
-	while(i < size)
+	while (i < size)
 	{
 		arr[i] = temp->value;
 		temp = temp->next;
@@ -29,10 +41,10 @@ static void	bubble_sort(int *arr, int size)
 	int	temp;
 
 	i = 0;
-	while(i < (size - 1))
+	while (i < (size - 1))
 	{
 		j = 0;
-		while(j < (size - 1 - i))
+		while (j < (size - 1 - i))
 		{
 			if (arr[j] > arr [j + 1])
 			{
@@ -49,35 +61,30 @@ static void	bubble_sort(int *arr, int size)
 // trouver la mediane
 static int	find_median(int	*arr, int size)
 {
-	if (size % 2 != 0)
-	{
-		return (arr[size / 2]);
-	}
-	else
-		return ((arr[(size / 2) - 1] + arr[size / 2]) / 2);
+	return (arr[size / 2]);
 }
 
-// pousser la moitie avec les plus petits int dans stack_b
-static void	push_small_to_b(t_list ** stack_a, t_list **stack_b)
+// pousser la moitié avec les plus petits int dans stack_b
+static void	push_small_to_b(t_list **stack_a, t_list **stack_b)
 {
-	int i;
 	int	size;
-	int median;
-	int count;
 	int	*arr;
+	int	median;
+	int	i;
+	int	count;
 
 	size = ft_lstsize(*stack_a);
 	arr = stack_to_arr(*stack_a, size);
 	if (!arr)
-		return;
+		return ;
 	bubble_sort(arr, size);
 	median = find_median(arr, size);
 	free(arr);
 	i = 0;
 	count = 0;
-	while(i < size)
+	while (i < size)
 	{
-		if((*stack_a)->value < median)
+		if ((*stack_a)->value < median)
 		{
 			pb(stack_a, stack_b, 1);
 			count++;
@@ -87,53 +94,21 @@ static void	push_small_to_b(t_list ** stack_a, t_list **stack_b)
 		i++;
 	}
 }
-//algo_3 pour trier dans l ordre decroissant
-void	algo_3_b(t_list **stack_b)
-{
-	int	A = (*stack_b)->value;
-	int	B = (*stack_b)->next->value;
-	int	C = (*stack_b)->next->next->value;
 
-	if (*stack_b == NULL || (*stack_b)->next == NULL || (*stack_b)->next->next == NULL)
-		return ;
-	if (A < B && B < C)
-		return ;
-	if (A < C && C < B)
-		sb(stack_b, 1);
-	else if (B < A && A < C)
-		rb(stack_b, 1);
-	else if (C < A && A < B)
-		rrb(stack_b, 1);
-	else if (B < C && C < A)
-	{
-		sb(stack_b, 1);
-		rb(stack_b, 1);
-	}
-	else if (C < B && B < A)
-	{
-		rb(stack_b, 1);
-		sb(stack_b, 1);
-	}
-}
-// algo_2 pour trier dans l ordre decroissant
-void	algo_2_b(t_list **stack_b)
+// chercher le plus grand dans stack_b
+static int	search_max(t_list *stack)
 {
-	if (*stack_b == NULL || (*stack_b)->next == NULL)
-		return ;
-	if((*stack_b)->value < (*stack_b)->next->value)
-		sb(stack_b, 1);
-}
-// algo_5 pour trier dans l ordre decroissant
+	int		i;
+	int		max;
+	int		position;
+	t_list	*temp;
 
-static int search_max(t_list *stack)
-{
 	if (stack == NULL)
-		return -1;
-	int i = 0;
-	int max = stack->value;
-	int position = 0;
-	t_list *temp = stack;
-
+		return (-1);
+	i = 0;
+	temp = stack;
+	max = temp->value;
+	position = 0;
 	while (temp != NULL)
 	{
 		if (temp->value > max)
@@ -144,150 +119,75 @@ static int search_max(t_list *stack)
 		temp = temp->next;
 		i++;
 	}
-	return position;
+	return (position);
 }
 
-static void push_max_to_a(t_list **stack_a, t_list **stack_b)
-{
-	int max_position = search_max(*stack_b);
-	int size = ft_lstsize(*stack_b);
+// apres avoir trouver la position duplus grand dans stack_b,
+// on le met en tete de liste
 
-	if (max_position <= (size / 2))
+void	move_largest_to_top(t_list **stack_b)
+{
+	int		i;
+	int		size;
+	int		max_value;
+	int		max_position;
+	t_list	*temp;
+
+	i = 0;
+	size = ft_lstsize(*stack_b);
+	temp = NULL;
+	temp = *stack_b;
+	max_value = temp->value;
+	max_position = 0;
+	while (temp)
+	{
+		if (temp->value > max_value)
+		{
+			max_value = temp->value;
+			max_position = i;
+		}
+		temp = temp->next;
+		i++;
+	}
+	if (max_position < size / 2)
+	{
 		while (max_position > 0)
 		{
 			rb(stack_b, 1);
 			max_position--;
 		}
+	}
 	else
 	{
-		int moves = size - max_position;
-		while (moves > 0)
+		while (max_position < size)
 		{
 			rrb(stack_b, 1);
-			moves--;
+			max_position++;
 		}
 	}
-
-	pa(stack_a, stack_b, 1);
-}
-
-void algo_5_b(t_list **stack_a, t_list **stack_b)
-{
-	push_max_to_a(stack_a, stack_b);
-	push_max_to_a(stack_a, stack_b);
-
-	if (ft_lstsize(*stack_b) == 3)
-		algo_3_b(stack_b);
-	else if (ft_lstsize(*stack_b) == 2)
-		algo_2_b(stack_b);
-
-	pb(stack_a, stack_b, 1);
-	pb(stack_a, stack_b, 1);
 }
 
 void	sort_stack_b(t_list **stack_a, t_list **stack_b)
 {
-	int size;
+	int	size;
 
 	size = ft_lstsize(*stack_b);
-	if(size == 2)
-		algo_2_b(stack_b);
-	if (size == 3)
-		algo_3_b(stack_b);
-	else if (size == 5)
-		algo_5_b(stack_a, stack_b);
-	// else
-	// {
-	// 	while (*stack_b)
-	// 	{
-	// 		move_largest_to_top(stack_b);
-	// 		pa(stack_a, stack_b, 1);
-	// 	}
-	// }
+	while (*stack_b)
+	{
+		search_max(*stack_b);
+		move_largest_to_top(stack_b);
+		pa(stack_a, stack_b, 1);
+	}
 }
-void	algo_n(t_list **stack_a,t_list **stack_b)
+
+void	algo_n(t_list **stack_a, t_list **stack_b)
 {
-	if(!stack_a || !(*stack_a))
-		return;
-	while(ft_lstsize(*stack_a) > 5)
+	if (!stack_a || !(*stack_a))
+		return ;
+	while (ft_lstsize(*stack_a) > 5)
 	{
 		push_small_to_b(stack_a, stack_b);
 	}
 	algo_5(stack_a, stack_b);
 	sort_stack_b(stack_a, stack_b);
 }
-
-
-
-
-
-
-// int main()
-// {
-// 	int arr[] = {18, 19, 20, 21, 22, 23};
-// 	int size = sizeof(arr) / sizeof(arr[0]);
-
-// 	printf("Médiane : %d\n", find_median(arr, size));
-// 	return 0;
-// }
-
-// t_list	*ft_create_node(int value)
-// {
-// 	t_list	*node;
-// 	node = malloc(sizeof(t_list));
-// 	if (!node)
-// 		return (NULL);
-// 	node->value = value;
-// 	node->next = NULL;
-// 	return (node);
-// }
-
-// void	free_list(t_list *head)
-// {
-// 	t_list	*temp;
-// 	while (head != NULL)
-// 	{
-// 		temp = head;
-// 		head = head->next;
-// 		free(temp);
-// 	}
-// }
-// int main()
-// {
-// 	t_list  *stack_a = ft_create_node(5);
-// 	stack_a->next = ft_create_node(4);
-// 	stack_a->next->next = ft_create_node(3);
-// 	stack_a->next->next->next = ft_create_node(2);
-
-// 	int size = 4;
-
-// 	int *arr = stack_to_arr(stack_a, size);
-// 	if (!arr)
-// 	{
-// 		printf("Error: Memory allocation failed\n");
-// 		free_list(stack_a);
-// 		return (1);
-// 	}
-
-// 	printf("Array contents:\n");
-
-// 	int i = 0;
-// 	while(i < size)
-// 	{
-// 		printf("%d ", arr[i]);
-// 		i++;
-// 	}
-// 	printf("\n");
-// 	bubble_sort(arr, size);
-// 	int median = find_median(arr, size);
-// 	printf("Après le tri : ");
-//     for(int i = 0; i < size; i++)
-// 		printf("%d", arr[i]);
-// 		printf("\n");
-// 	printf("%d\n", median );
-
-// 	free(arr);
-// 	free_list(stack_a);
-// 	return (0);
-// }
-
