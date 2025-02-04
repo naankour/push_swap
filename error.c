@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   error.c                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: naankour <naankour@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/02/04 14:46:29 by naankour          #+#    #+#             */
+/*   Updated: 2025/02/04 14:47:47 by naankour         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "push_swap.h"
 
 size_t	ft_strlen(const char *str)
@@ -166,19 +178,19 @@ int	ft_is_valid_nb(char *str)
 			return (0);
 		i++;
 	}
-	return(1);
+	return (1);
 }
 
 int	ft_check_double(t_list *head, int num)
 {
-		t_list *current;
-		current = head;
-		while (current != NULL)
-		{
-			if (current->value == num)
-				return (1);
-			current = current->next;
-		}
-		return (0);
-}
+	t_list	*current;
 
+	current = head;
+	while (current != NULL)
+	{
+		if (current->value == num)
+			return (1);
+		current = current->next;
+	}
+	return (0);
+}

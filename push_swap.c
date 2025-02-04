@@ -6,7 +6,7 @@
 /*   By: naankour <naankour@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/20 09:29:24 by naankour          #+#    #+#             */
-/*   Updated: 2025/02/03 14:55:51 by naankour         ###   ########.fr       */
+/*   Updated: 2025/02/04 15:59:32 by naankour         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,11 @@ int	main(int argc, char **argv)
 	int	size;
 
 	if (argc == 2 && ft_strchr(argv[1], ' ') != NULL)
+	{
 		tab = ft_split(argv[1], ' ');
+		if (!tab)
+			return (1);
+	}
 	else
 		tab = &argv[1];
 	i = 0;
@@ -57,11 +61,11 @@ int	main(int argc, char **argv)
 	else if (size == 4 || size == 5)
 		algo_5(&stack_a, &stack_b);
 	else
-        algo_n(&stack_a, &stack_b);
+		algo_n(&stack_a, &stack_b);
 	// print_list(stack_a);
 	// printf("\n");
 	// print_list(stack_b);
-	// free_list(stack_a);
-	// free_list(stack_b);
+	free_list(stack_a);
+	free_list(stack_b);
 	return (0);
 }

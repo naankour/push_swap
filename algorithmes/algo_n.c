@@ -6,7 +6,7 @@
 /*   By: naankour <naankour@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/03 15:04:01 by naankour          #+#    #+#             */
-/*   Updated: 2025/02/03 15:12:56 by naankour         ###   ########.fr       */
+/*   Updated: 2025/02/04 16:09:01 by naankour         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,18 +58,17 @@ static void	bubble_sort(int *arr, int size)
 	}
 }
 
-// trouver la mediane
+// // trouver la mediane
 static int	find_median(int	*arr, int size)
 {
 	return (arr[size / 2]);
 }
 
 // pousser la moitié avec les plus petits int dans stack_b
-static void	push_small_to_b(t_list **stack_a, t_list **stack_b)
+static void	push_small_to_b(t_list **stack_a, t_list **stack_b, int median)
 {
 	int	size;
 	int	*arr;
-	int	median;
 	int	i;
 	int	count;
 
@@ -93,6 +92,64 @@ static void	push_small_to_b(t_list **stack_a, t_list **stack_b)
 			ra(stack_a, 1);
 		i++;
 	}
+}
+
+void	push_chunk_to_b(t_list **stack_a, t_list **stack_b, int *limits,
+int chunk_count)
+{
+	int	i;
+	int	j;
+	int	size;
+
+	size = ft_lstsize(*stack_a);
+	i = 0;
+	while (i < chunk_count)
+	{
+		j = 0;
+		while (j < size)
+		{
+			if ((*stack_a) && (*stack_a)->value <= limits[i])
+			{
+				pb(stack_a, stack_b, 1);
+				if ((*stack_b)->value <= limits[i] - (limits[i] / 4))
+				rb(stack_b, 1);
+			}
+			else
+				ra(stack_a, 1);
+			j++;
+		}
+		i++;
+	}
+}
+
+// determiner limite des chunks
+static void	find_chunk_lim(t_list **stack_a, t_list **stack_b, int chunk_count)
+{
+	int	i;
+	int	size;
+	int	*arr;
+	int	*limits;
+
+	size = ft_lstsize(*stack_a);
+	arr = stack_to_arr(*stack_a, size);
+	if (!arr)
+		return ;
+	limits = malloc(sizeof(int) * chunk_count);
+	if (!limits)
+	{
+		free (arr);
+		return ;
+	}
+	bubble_sort(arr, size);
+	i = 0;
+	while (i < chunk_count)
+	{
+		limits[i] = arr[(size / chunk_count) * (i + 1)];
+		i++;
+	}
+	free (arr);
+	push_chunk_to_b(stack_a, stack_b, limits, chunk_count);
+	free (limits);
 }
 
 // chercher le plus grand dans stack_b
@@ -124,8 +181,27 @@ static int	search_max(t_list *stack)
 
 // apres avoir trouver la position duplus grand dans stack_b,
 // on le met en tete de liste
+static void	rotation_opti(t_list **stack_b, int max_position, int size)
+{
+	if (max_position < size / 2)
+	{
+		while (max_position > 0)
+		{
+			rb(stack_b, 1);
+			max_position--;
+		}
+	}
+	else
+	{
+		while (max_position < size)
+		{
+			rrb(stack_b, 1);
+			max_position++;
+		}
+	}
+}
 
-void	move_largest_to_top(t_list **stack_b)
+static void	move_largest_to_top(t_list **stack_b)
 {
 	int		i;
 	int		size;
@@ -149,25 +225,10 @@ void	move_largest_to_top(t_list **stack_b)
 		temp = temp->next;
 		i++;
 	}
-	if (max_position < size / 2)
-	{
-		while (max_position > 0)
-		{
-			rb(stack_b, 1);
-			max_position--;
-		}
-	}
-	else
-	{
-		while (max_position < size)
-		{
-			rrb(stack_b, 1);
-			max_position++;
-		}
-	}
+	rotation_opti(stack_b, max_position, size);
 }
 
-void	sort_stack_b(t_list **stack_a, t_list **stack_b)
+static void	sort_stack_b(t_list **stack_a, t_list **stack_b)
 {
 	int	size;
 
@@ -182,12 +243,19 @@ void	sort_stack_b(t_list **stack_a, t_list **stack_b)
 
 void	algo_n(t_list **stack_a, t_list **stack_b)
 {
+	int	size;
+	int	median;
+
 	if (!stack_a || !(*stack_a))
 		return ;
-	while (ft_lstsize(*stack_a) > 5)
-	{
-		push_small_to_b(stack_a, stack_b);
-	}
+	size = ft_lstsize(*stack_a);
+	median = 0;
+	if (size <= 100)
+		while (ft_lstsize(*stack_a) > 5)
+			push_small_to_b(stack_a, stack_b, median);
+	else
+		while (ft_lstsize(*stack_a) > 5)
+			find_chunk_lim(stack_a, stack_b, 5);
 	algo_5(stack_a, stack_b);
 	sort_stack_b(stack_a, stack_b);
 }

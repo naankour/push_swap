@@ -14,26 +14,29 @@
 
 void	algo_3(t_list **stack_a)
 {
-	int	A = (*stack_a)->value;
-	int	B = (*stack_a)->next->value;
-	int	C = (*stack_a)->next->next->value;
+	int	a;
+	int	b;
+	int	c;
 
+	a = (*stack_a)->value;
+	b = (*stack_a)->next->value;
+	c = (*stack_a)->next->next->value;
 	if (*stack_a == NULL || (*stack_a)->next == NULL || (*stack_a)->next->next == NULL)
 		return ;
-	if (A < B && B < C)
+	if (a < b && b < c)
 		return ;
-	if (A < C && B < A)
+	if (a < c && b < a)
 		sa(stack_a, 1);
-	else if (A < B && C < A)
+	else if (a < b && c < a)
 		rra(stack_a, 1);
-	else if (B < C && C < A)
+	else if (b < c && c < a)
 		ra(stack_a, 1);
-	else if (A < C && C < B)
+	else if (a < c && c < b)
 	{
 		sa(stack_a, 1);
 		ra(stack_a, 1);
 	}
-	else if (B < A && C < B)
+	else if (b < a && c < b)
 	{
 		ra(stack_a, 1);
 		sa(stack_a, 1);

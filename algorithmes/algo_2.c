@@ -16,6 +16,6 @@ void	algo_2(t_list **stack_a)
 {
 	if (*stack_a == NULL || (*stack_a)->next == NULL)
 		return ;
-	if((*stack_a)->value > (*stack_a)->next->value)
+	if ((*stack_a)->value > (*stack_a)->next->value)
 		sa(stack_a, 1);
 }
