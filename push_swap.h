@@ -28,6 +28,7 @@ typedef struct s_list
 void	algo_2(t_list **stack_a);
 void	algo_3(t_list **stack_a);
 void	algo_5(t_list **stack_a, t_list **stack_b);
+void	algo_n(t_list **stack_a, t_list **stack_b);
 
 void	pa(t_list **stack_a, t_list **stack_b, int print);
 void	pb(t_list **stack_a, t_list **stack_b, int print);
@@ -41,6 +42,7 @@ void	sa(t_list **stack_a, int print);
 void	sb(t_list **stack_b, int print);
 void	ss(t_list **stack_a, t_list **stack_b, int print);
 
+int		ft_atoi(const char *str);
 int		ft_error(char **tab, t_list *head, int i, int num);
 char	**ft_split(const char *s, char c);
 char	*ft_strchr(const char *s, int c);
@@ -50,10 +52,14 @@ t_list	*ft_create_node(int value);
 void	ft_addnode_back(t_list **head, t_list *new);
 void	print_list(t_list *head);
 void	free_list(t_list *head);
-int		ft_atoi(const char *str);
-
 int		ft_lstsize(t_list *lst);
-void	algo_n(t_list **stack_a, t_list **stack_b);
 
-char	**ft_split(const char *s, char c);
+int		*stack_to_arr(t_list *stack_a, int size);
+void	bubble_sort(int *arr, int size);
+int		find_median(int	*arr, int size);
+void	push_small_to_b(t_list **stack_a, t_list **stack_b, int median);
+void	find_chunk_lim(t_list **stack_a, t_list **stack_b, int chunk_count);
+void	push_chunk_to_b(t_list **stack_a, t_list **stack_b, int *limits,
+			int chunk_count);
+
 #endif

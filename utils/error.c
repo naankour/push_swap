@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   error.c                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: naankour <naankour@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/02/05 11:17:56 by naankour          #+#    #+#             */
+/*   Updated: 2025/02/05 11:26:30 by naankour         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../push_swap.h"
 
 static	int	ft_isdigit(int c)
@@ -24,7 +36,7 @@ static	int	ft_is_valid_nb(char *str)
 			return (0);
 		i++;
 	}
-	return(1);
+	return (1);
 }
 
 int	ft_atoi(const char *str)
@@ -48,8 +60,6 @@ int	ft_atoi(const char *str)
 	{
 		result = result * 10 + (str[i] - '0');
 		i++;
-		if (result > INT_MAX)
-			return (INT_MIN);
 	}
 	result *= sign;
 	if (result < INT_MIN || result > INT_MAX)
@@ -59,15 +69,16 @@ int	ft_atoi(const char *str)
 
 static	int	ft_check_double(t_list *head, int num)
 {
-		t_list *current;
-		current = head;
-		while (current != NULL)
-		{
-			if (current->value == num)
-				return (1);
-			current = current->next;
-		}
-		return (0);
+	t_list	*current;
+
+	current = head;
+	while (current != NULL)
+	{
+		if (current->value == num)
+			return (1);
+		current = current->next;
+	}
+	return (0);
 }
 
 int	ft_error(char **tab, t_list *head, int i, int num)

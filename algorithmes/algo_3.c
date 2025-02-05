@@ -21,10 +21,6 @@ void	algo_3(t_list **stack_a)
 	a = (*stack_a)->value;
 	b = (*stack_a)->next->value;
 	c = (*stack_a)->next->next->value;
-	if (*stack_a == NULL || (*stack_a)->next == NULL || (*stack_a)->next->next == NULL)
-		return ;
-	if (a < b && b < c)
-		return ;
 	if (a < c && b < a)
 		sa(stack_a, 1);
 	else if (a < b && c < a)

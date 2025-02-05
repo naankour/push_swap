@@ -8,6 +8,8 @@ SRCS = push_swap.c\
 	algorithmes/algo_3.c\
 	algorithmes/algo_5.c\
 	algorithmes/algo_n.c\
+	algorithmes/algo_n_utils.c\
+	algorithmes/algo_n_utils2.c\
 	instructions/push.c\
 	instructions/reverse_rotate.c\
 	instructions/rotate.c\
